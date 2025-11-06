@@ -45,6 +45,11 @@ sudo apt install libcairo2-dev
 ---
 
 ## ⚙️ 3 - How to Use
+At moment, just
+
+python3 animate_cnc.py --svg teste.svg --output torno --resolution 1024x768 --tool-stroke 0.5 --path-stroke 0.5 --fps 10
+
+python3 animate_cnc.py --help
 
 *(in progress)*
 
@@ -116,6 +121,11 @@ sudo apt install libcairo2-dev
 ---
 
 ## ⚙️ 3 - Forma de Uso
+No momento, apenas 
+
+python3 animate_cnc.py --svg teste.svg --output torno --resolution 1024x768 --tool-stroke 0.5 --path-stroke 0.5 --fps 10
+
+python3 animate_cnc.py --help
 
 *(em desenvolvimento)*
 

@@ -1,0 +1,311 @@
+include("config.gcmc");
+include("ferramentas.gcmc");
+
+/* Comandos da maquina para operações especificas */
+/* Comandos Referente a Contra Ponta */
+_COM_CP_ABRE         = "M40" ;  /* Abre a contraponta */
+_COM_CP_FECHA        = "M41" ;  /* Fecha a contraponta */
+_COM_VER_CP_ABERTA   = "M28" ;  /* Testa estado de contraponta aberta */
+_COM_VER_CP_FECHADA  = "M29" ;  /* Testa estado de contraponta fechada */
+
+/* Comandos Referente a Placa */
+_COM_PLACA_ABRE         = "M46" ;  /* Abre a placa/pinça */
+_COM_PLACA_FECHA        = "M47" ;  /* Fecha a placa/pinça */
+_COM_VER_PLACA_ABERTA   = "M68" ;  /* Testa estado de placa aberta (Atualmente sem Obedecer ao Comando Nem Bloquear) */
+_COM_VER_PLACA_FECHADA  = "M69" ;  /* Testa estado de placa fechada (Atualmente sem Obedecer ao Comando Nem Bloquear) */
+
+_COM_PLACA_GIRA_H       = "M03" ;  /* Liga placa sentido horário */
+_COM_PLACA_GIRA_AH      = "M04" ;  /* Liga placa sentido anti-horário */
+_COM_PLACA_GIRA_H_REFR  = "M13" ;  /* Liga placa sentido horário e o refrigerante de corte */
+_COM_PLACA_GIRA_AH_REFR = "M14" ;  /* Liga placa sentido anti-horário e o refrigerante de corte */
+
+_COM_PLACA_PARA         = "M05" ;  /* Desliga a placa */
+
+/* Comandos Referente a Refrigeracao */
+_COM_REFRIG_DES     = "M09" ;  /* Desliga óleo refrigerante */
+_COM_REFRIG_LIG     = "M08" ;  /* Desliga óleo refrigerante */
+
+/* Variaveis que configuram o comportamento e estado da maquina */
+/* Variaveis de Processo */
+_MAQ_PONTO_TROCA   = [220,150];  /* Define o ponto de troca seguro das ferramentas */
+_MAQ_VEL_AVANCO    = 120;        /* Define a velocidade de deslocamento da maquina nos processo de usinagem em mm/min */
+_MAQ_PASSO         = 0.5;        /* Define a profundidade do passo a ser usado nos processos */
+_MAQ_RECUO_X       = 1;          /* Define o valor do recuo das ferramentas em X entre processos de desbaste */
+_MAQ_RECUO_Z       = 1;          /* Define o valor do recuo das ferramentas em Z entre processos de desbaste */
+_MAQ_SOB_METAL_X   = 0;          /* Define o valor do sobre metal em X a ser deixado na usinagem */
+_MAQ_SOB_METAL_Z   = 0;          /* Define o valor do sobre metal em Z a ser deixado na usinagem */
+
+/* Variaveis de Estado da Maquina */
+_MAQ_ESTADO_PLACA_ABERTA  = 0 ; /* Define o valor para o estado da Placa Aberta */
+_MAQ_ESTADO_PLACA_FECHADA = 1 ; /* Define o valor para o estado da Placa Fechada */
+_MAQ_ESTADO_PLACA         = -1; /* Estado da Placa (-1=INDEFINIDO) */
+
+_MAQ_ESTADO_CP_ABERTA    = 0 ;  /* Define o valor para o estado da Contra Ponta Aberta */
+_MAQ_ESTADO_CP_FECHADA   = 1 ;  /* Define o valor para o estado da Contra Ponta Fechada */
+_MAQ_ESTADO_CP           = -1;  /* Estado da Contra Ponta  (-1=INDEFINIDO) */
+
+_MAQ_ESTADO_REFRIG_LIG    = 1 ;  /* Define o valor para o estado da Refrigeração para Ligada */
+_MAQ_ESTADO_REFRIG_DES    = 0 ;  /* Define o valor para o estado da Refrigeração para Desligada */
+_MAQ_ESTADO_REFRIG        = 1 ;  /* Estado da Refrigeracao  (1=Ligado) */
+
+
+/* Variaveis da Placa */
+_MAQ_PLACA_VEL_MAX = 300;        /* Define a velocidade maxima da placa do processo em questao */
+_MAQ_PLACA_VEL_MIN = 60;         /* Define a velocidade minima da placa do processo em questao */
+_MAQ_PLACA_VEL     = 300;        /* Define a velocidade da placa do processo em questao */
+
+_MAQ_PLACA_SENTIDO_H  = 1 ;      /* Constante que define o sentido de giro horario  */
+_MAQ_PLACA_SENTIDO_AH = 0 ;      /* Constante que define o sentido de giro anti-horario */
+_MAQ_PLACA_SENTIDO    = -1;      /* Define o sentido de Giro da Placa, 1=Horario, 0=Anti-Horario */
+
+_MAQ_FIXTURE=-50;
+
+
+function maquina_vars()
+{
+  literal("\n",
+          _SEP_COMENTARIOS, _SEP_BLOCOS, "\n",
+          _SEP_COMENTARIOS, "---- Funcao maquina_vars() ----\n",
+          _SEP_COMENTARIOS, "   _MAQ_PONTO_TROCA = ", _MAQ_PONTO_TROCA , " (Coord. [X,Z])\n",
+          _SEP_COMENTARIOS, "    _MAQ_VEL_AVANCO = ", _MAQ_VEL_AVANCO , " (mm/min)\n",
+          _SEP_COMENTARIOS, "         _MAQ_PASSO = ", _MAQ_PASSO , " (mm)\n",
+          _SEP_COMENTARIOS, "       _MAQ_RECUO_X = ", _MAQ_RECUO_X , " (mm)\n",
+          _SEP_COMENTARIOS, "       _MAQ_RECUO_Z = ", _MAQ_RECUO_Z , " (mm)\n",
+          _SEP_COMENTARIOS, " _MAQ_PLACA_VEL_MAX = ", _MAQ_PLACA_VEL_MAX , " (RPM)\n",
+          _SEP_COMENTARIOS, " _MAQ_PLACA_VEL_MIN = ", _MAQ_PLACA_VEL_MIN , " (RPM)\n",
+          _SEP_COMENTARIOS, "     _MAQ_PLACA_VEL = ", _MAQ_PLACA_VEL , " (RPM)\n",
+          _SEP_COMENTARIOS, " _MAQ_PLACA_SENTIDO = ", _MAQ_PLACA_SENTIDO , " (0-Horario, 1=Anti-Horario)\n",
+          _SEP_COMENTARIOS, "_MAQ_DIAMETRO_BRUTO = ", _MAQ_DIAMETRO_BRUTO , " (mm)\n"
+  ) ;
+}
+
+/* Função para verificar se os diversos estados da maquina foram definidos antes do acionamento 
+   Em Caso de falha de predefinir os estados anteriormente usa a função  inexistente _() para
+   gerar um erro e parar a execução.
+*/
+function maq_verifica_estado()
+{
+  if(_MAQ_ESTADO_PLACA != _MAQ_ESTADO_PLACA_ABERTA && _MAQ_ESTADO_PLACA != _MAQ_ESTADO_PLACA_FECHADA)
+  {
+    literal("\n",
+            _SEP_ERROS, "---- maq_verifica_estado() ----\n",
+            _SEP_ERROS, "Estado da Placa (Aberta/Fechada) não definido ou incorreto\n" 
+           );
+    _();
+  }
+  if(_MAQ_PLACA_SENTIDO != _MAQ_PLACA_SENTIDO_H && _MAQ_PLACA_SENTIDO != _MAQ_PLACA_SENTIDO_AH)
+  {
+    literal("\n",
+            _SEP_ERROS, "---- maq_verifica_estado() ----\n",
+            _SEP_ERROS, "Sentido de Giro da Placa (Horario/Anti-Horario) não definido ou incorreto\n" 
+           );
+    _();
+  }
+  if(_MAQ_ESTADO_CP != _MAQ_ESTADO_CP_ABERTA && _MAQ_ESTADO_CP != _MAQ_ESTADO_CP_FECHADA)
+  {
+    literal("\n",
+            _SEP_ERROS, "---- maq_verifica_estado() ----\n",
+            _SEP_ERROS, "Estado da Contra Ponta (Aberta/Fechada) não definido ou incorreto\n" 
+           );
+    _();
+  }
+  if(_MAQ_ESTADO_REFRIG != _MAQ_ESTADO_REFRIG_LIG && _MAQ_ESTADO_REFRIG != _MAQ_ESTADO_REFRIG_LIG)
+  {
+    literal("\n",
+            _SEP_ERROS, "---- maq_verifica_estado() ----\n",
+            _SEP_ERROS, "Estado da Refrigeracao (Ligada/Desligada) não definido ou incorreto\n" 
+           );
+    _();
+  }
+}
+
+/* Função usada para ajustar a velocidade da placa dentro dos limites do processo,
+   definidos nas variaveis _MAQ_PLACA_VEL_MAX e _MAQ_PLACA_VEL_MIN, assim limitando
+   a velocidade maxima da mesma.
+*/
+function maquina_vel_placa(___Vel=30)
+{ 
+  ___Vel = to_int(___Vel);
+    if(_MAQ_DEBUG)
+    {
+      literal("\n", _SEP_COMENTARIOS, _SEP_BLOCOS, "\n",
+              _SEP_COMENTARIOS, "---- maquina_vel_placa() ----", "\n"
+             );
+    }  
+  if(___Vel > _MAQ_PLACA_VEL_MAX)
+  {
+    _MAQ_PLACA_VEL = to_int(_MAQ_PLACA_VEL_MAX);
+    literal(
+            _SEP_AVISOS, "Velocidade da placa ", ___Vel ," Maior limite maximo (_MAQ_PLACA_VEL_MAX = ", _MAQ_PLACA_VEL_MAX, ")\n",
+            _SEP_AVISOS, "Velocidade da placa ajustado para o Maximo Permitido\n"
+           );
+  }
+  elif (___Vel < _MAQ_PLACA_VEL_MIN)
+  {
+    _MAQ_PLACA_VEL = to_int(_MAQ_PLACA_VEL_MIN);
+    literal(
+            _SEP_AVISOS, "Velocidade da placa ", ___Vel ," Menor limite maximo (_MAQ_PLACA_VEL_MIN = ", _MAQ_PLACA_VEL_MIN, ")\n",
+            _SEP_AVISOS, "Velocidade da placa ajustado para o Mimino Permitido\n"
+           );
+  }
+  else { _MAQ_PLACA_VEL = ___Vel; }
+  
+  if(_MAQ_DEBUG)
+  {
+    literal(
+            _SEP_COMENTARIOS, "_MAQ_PLACA_VEL = ", _MAQ_PLACA_VEL , "\n"
+           );
+  }
+}
+
+
+/* Função usada para ajustar as velocidades da maquina de acordo com os valores
+   das ferramentas e assim maximizar o processo de desbaste sem forçar as ferramentas
+   alem da suas capacidades, visando a operação de desbaste.
+*/
+function maquina_ajusta_desbaste(___Diam=_MAQ_DIAMETRO_BRUTO)
+{
+  if(_FERR_TIPO == _FERR_TIPO_BROCA )
+  {
+    maquina_vel_placa((_FERR_VEL_CORTE * 1000) / (_FERR_DIAMETRO * 3.14));
+      _MAQ_VEL_AVANCO = to_int(_MAQ_PLACA_VEL * _FERR_VEL_AVANCO)  ;
+      _MAQ_PASSO      = _FERR_PASSO ;
+  }
+  else
+  {
+    maquina_vel_placa((_FERR_VEL_CORTE * 1000) / (___Diam * 3.14));
+    _MAQ_VEL_AVANCO = to_int(_MAQ_PLACA_VEL * _FERR_VEL_AVANCO)  ;
+    _MAQ_PASSO      = _FERR_PASSO ;
+  }
+  if(_MAQ_DEBUG)
+    {
+      literal("\n", _SEP_COMENTARIOS, _SEP_BLOCOS, "\n",
+              _SEP_COMENTARIOS, "---- Funcao maquina_ajusta_desbaste() ----\n",
+              _SEP_COMENTARIOS, "  _MAQ_PLACA_VEL = ", _MAQ_PLACA_VEL, " (RPM)\n",
+              _SEP_COMENTARIOS, " _MAQ_VEL_AVANCO = ", _MAQ_VEL_AVANCO, " (mm/min)\n",
+              _SEP_COMENTARIOS, "      _MAQ_PASSO = ", _MAQ_PASSO, " (mm)\n"
+             );
+    }
+}
+
+/* Função usada para ajustar as velocidades da maquina de acordo com os valores
+   das ferramentas e assim maximizar o processo de desbaste sem forçar as ferramentas
+   alem da suas capacidades, visando a operação de acabamento.
+*/
+function maquina_ajusta_acabamento(___Diam=_MAQ_DIAMETRO_BRUTO)
+{
+  if(_FERR_TIPO == _FERR_TIPO_BROCA )
+  {
+    maquina_vel_placa((_FERR_VEL_CORTE * 1000) / (_FERR_DIAMETRO * 3.14));
+      _MAQ_VEL_AVANCO = to_int(_MAQ_PLACA_VEL * _FERR_VEL_AVANCO_ACAB)  ;
+      _MAQ_PASSO      = _FERR_PASSO_ACAB  ;
+  }
+  else
+  {
+    maquina_vel_placa((_FERR_VEL_CORTE * 1000) / (___Diam * 3.14));
+    _MAQ_VEL_AVANCO = to_int(_MAQ_PLACA_VEL * _FERR_VEL_AVANCO_ACAB)  ;
+    _MAQ_PASSO      = _FERR_PASSO_ACAB  ;
+  }
+  if(_MAQ_DEBUG)
+    {
+      literal("\n", _SEP_COMENTARIOS, _SEP_BLOCOS, "\n",
+              _SEP_COMENTARIOS, "---- Funcao maquina_ajusta_acabamento() ----\n",
+              _SEP_COMENTARIOS, "  _MAQ_PLACA_VEL = ", _MAQ_PLACA_VEL, " (RPM)\n",
+              _SEP_COMENTARIOS, " _MAQ_VEL_AVANCO = ", _MAQ_VEL_AVANCO, " (mm/min)\n",
+              _SEP_COMENTARIOS, "      _MAQ_PASSO = ", _MAQ_PASSO, " (mm)\n"
+             );
+    }
+}
+
+/* Função usada para a operação de fechar a placa, a mesma gera o comando para a
+   maquina e ajusta a variavel _MAQ_ESTADO_PLACA para o estado correspondente
+*/
+function maquina_placa_fecha()
+{
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", _COM_PLACA_PARA, " ", _COM_REFRIG_DES, " ", _COM_PLACA_FECHA);
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "DESLIGA PLACA, DESLIGA REFRIGERACAO, FECHA PLACA");}
+  literal("\n");
+  _MAQ_ESTADO_PLACA = _MAQ_ESTADO_PLACA_FECHADA ;
+}
+
+/* Função usada para a operação de abrir a placa, a mesma gera o comando para a
+   maquina e ajusta a variavel _MAQ_ESTADO_PLACA para o estado correspondente
+*/
+function maquina_placa_abre()
+{
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", _COM_PLACA_PARA, " ", _COM_REFRIG_DES, " ", _COM_PLACA_ABRE);
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "DESLIGA PLACA, DESLIGA REFRIGERACAO, ABRE PLACA");}
+  literal("\n");
+  _MAQ_ESTADO_PLACA = _MAQ_ESTADO_PLACA_ABERTA ;
+}
+
+/* Função usada para a operação de fechar a Contra Ponta, a mesma gera o comando para a
+   maquina e ajusta a variavel _MAQ_ESTADO_CP para o estado correspondente
+*/
+function maquina_cp_fecha()
+{
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", _COM_PLACA_PARA, " ", _COM_REFRIG_DES, " ", _COM_CP_FECHA);
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "DESLIGA PLACA, DESLIGA REFRIGERACAO, FECHA CP");}
+  literal("\n");
+  _MAQ_ESTADO_CP = _MAQ_ESTADO_CP_FECHADA ;
+}
+
+/* Função usada para a operação de abrir a Contra Ponta, a mesma gera o comando para a
+   maquina e ajusta a variavel _MAQ_ESTADO_CP para o estado correspondente
+*/
+function maquina_cp_abre()
+{
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", _COM_PLACA_PARA, " ", _COM_REFRIG_DES, " ", _COM_CP_ABRE);
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "DESLIGA PLACA, DESLIGA REFRIGERACAO, ABRE CP");}
+  literal("\n");
+  _MAQ_ESTADO_CP = _MAQ_ESTADO_CP_ABERTA ;
+}
+
+
+/* Função usada para Ligar a placa e definir o sentido de giro da mesma, se não 
+   tiver definido os estados da maquina corretamente, para o programa e gera um erro.
+*/
+function maquina_placa_liga(___sentido = _MAQ_PLACA_SENTIDO)
+{
+  local ___cmd_placa;
+  local ___cmd_sentido;
+  local ___cmd_cp;
+  _MAQ_PLACA_SENTIDO = to_int(___sentido);
+  maq_verifica_estado();
+  ___cmd_sentido = _COM_PLACA_PARA;
+  if(  _MAQ_PLACA_SENTIDO == _MAQ_PLACA_SENTIDO_AH && _MAQ_ESTADO_REFRIG == _MAQ_ESTADO_REFRIG_DES)
+    {___cmd_sentido = _COM_PLACA_GIRA_AH ;}
+  elif(_MAQ_PLACA_SENTIDO == _MAQ_PLACA_SENTIDO_AH && _MAQ_ESTADO_REFRIG == _MAQ_ESTADO_REFRIG_LIG)
+    {___cmd_sentido = _COM_PLACA_GIRA_AH_REFR ;}
+  elif(_MAQ_PLACA_SENTIDO == _MAQ_PLACA_SENTIDO_H  && _MAQ_ESTADO_REFRIG == _MAQ_ESTADO_REFRIG_DES)
+    {___cmd_sentido = _COM_PLACA_GIRA_H ;}
+  elif(_MAQ_PLACA_SENTIDO == _MAQ_PLACA_SENTIDO_H  && _MAQ_ESTADO_REFRIG == _MAQ_ESTADO_REFRIG_LIG)
+    {___cmd_sentido = _COM_PLACA_GIRA_H_REFR ;}
+
+  if(  _MAQ_ESTADO_PLACA == _MAQ_ESTADO_PLACA_ABERTA)
+    {___cmd_placa = _COM_PLACA_ABRE ;}
+  elif(_MAQ_ESTADO_PLACA == _MAQ_ESTADO_PLACA_FECHADA)
+    {___cmd_placa = _COM_PLACA_FECHA ;}
+
+  if(  _MAQ_ESTADO_CP == _MAQ_ESTADO_CP_ABERTA)
+    {___cmd_cp = _COM_VER_CP_ABERTA;}
+  elif(_MAQ_ESTADO_CP == _MAQ_ESTADO_CP_FECHADA)
+    {___cmd_cp = _COM_VER_CP_FECHADA;}
+
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", ___cmd_cp, " ", ___cmd_placa, " ", ___cmd_sentido, " S", to_int(_MAQ_PLACA_VEL), " F", to_int(_MAQ_VEL_AVANCO));
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "VER. ESTADO CONTRA PONTA, FORÇA PLACA (ABERTA/FECHADA), LIGA A PLACA");}
+  literal("\n");
+}
+
+/* Função usada para Parar a placa.
+*/
+function maquina_placa_para()
+{
+  literal(_SEP_COMANDOS, "CYC CALL 2 ", _COM_REFRIG_DES, " ", _COM_PLACA_PARA);
+  if(_MAQ_DEBUG) {literal("  ", _SEP_COMENTARIOS, "DESLIGA REFRIGERACAO, DESLIGA PLACA");}
+  literal("\n");
+}
+
+if(issvg())
+{
+}

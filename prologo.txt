@@ -1,0 +1,26 @@
+:;###### CONFIGURAÇÃO INICIAL - INICIO
+:CYC CALL 0 :; RESET INTERNO (OBRIGATORIO EM TODOS OS PROGRAMAS)
+:M05 :; - desliga eixo árvore.
+:M09 :; - desliga refrigeração de corte.
+:;M37 :; - Define Gama baixa de Velocidade
+:M38 :; - Define Gama média de Velocidade
+:;M39 :; - Define Gama alta de Velocidade
+:M90 :; - desativa a compensação de raio da ponta da ferramenta. (CRC)
+:;M91 :; - ativa compensação de raio da ferramenta à direita (Rr).
+:;M92 :; - ativa compensação de raio da ferramenta à esquerda (Rl).
+:;M93 :; - ativa trajetória circular da ferramenta no contorno de cantos.
+:;M94 :; - desativa M93.
+:;M95 :; - quando programada numa sentença de posicionamento, os valores de posição programados se
+:;    :;referem ao zero máquina.
+:;M96 :; - ativa comportamento especial na aproximação ao ponto programado; o comando não aguarda
+:;    :;a chegada precisa da máquina no ponto programado para dar início à execução da próxima sentença.
+:M97 :; - cancela a ação de M96. Parada precisa.
+:G20 :; Programação do eixo X em diâmetro                    (TODAS)
+:G40 :; Desativa compensação do raio da ferramenta           (TODAS)
+:G60 :; Aproximação precisa                                  (TODAS)
+:G71 :; Dimensões em milímetros                              (TODAS)
+:G90 :; Coordenadas em valores absolutos                     (TODAS)
+:G94 :; Avanço em mm/min                                     (TODAS)
+:;G95 :; Avanço em mm/rot e “S” em RPM                        (TODAS)
+:G54 :; OFFSET DO ZERO PEÇA SELECIONADO
+:;###### CONFIGURAÇÃO INICIAL - FIM

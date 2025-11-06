@@ -1,0 +1,84 @@
+include("config.gcmc");
+include("maquina.gcmc");
+
+
+
+/* Variaveis da Maquina */
+/* --> Variaveis de Processo */
+_MAQ_PONTO_TROCA    = [220,150];  /* Coordenadas [X,Z] do ponto de troca seguro das ferramentas */
+_MAQ_DIAMETRO_BRUTO = 100 ;       /* Diametro Bruto Material a ser usinado */ 
+_MAQ_PASSO          = 0.5;        /* A profundidade do passo a ser usado nos processos */
+_MAQ_RECUO_X        = 1;          /* O recuo das ferramentas em X entre processos de desbaste */
+_MAQ_RECUO_Z        = 1;          /* O recuo das ferramentas em Z entre processos de desbaste */
+_MAQ_SOB_METAL_X    = 0;          /* O valor do sobre metal em X */
+_MAQ_SOB_METAL_Z    = 0;          /* O valor do sobre metal em Z */
+
+/* --> Variaveis da Placa */
+_MAQ_PLACA_VEL_MAX = 300;        /* A velocidade maxima da placa do processo em questao */
+_MAQ_PLACA_VEL_MIN = 60;         /* A velocidade minima da placa do processo em questao */
+
+/* Variaveis das Ferramentas */
+/* --> Corretor a ser aplicado as Ferramenta */
+_FERR_CORRECAO_VEL_CORTE  = 100 ; /* Fator de Correção a ser aplicado a Velocidade de Corte em % */
+_FERR_CORRECAO_VEL_AVANCO = 100 ; /* Fator de Correção a ser aplicado ao Avanco em % */
+_FERR_CORRECAO_PASSO      = 100 ; /* Fator de Correção a ser aplicado ao passo */
+
+/* Variaveis para descrever uma Ferramenta para o programa */
+_FERR_NUMERO          = -1 ; /* ( Numero do Corretor da Ferramenta ) */
+_FERR_DESCRICAO       = "" ; /* ( Texto com a Descrição da Ferramenta ) */
+_FERR_POSICAO         = 0  ; /* ( Numero da Posição no Castelo de Ferramentas ) */
+_FERR_TIPO            = 0  ; /* ( Numero do tipo, 1=Lateral, 2=Topo, 3=Broca ) */
+_FERR_VEL_CORTE       = 0  ; /* ( Numero da Velocidade de Corte Maxima Têorica em Metros/min ) */
+_FERR_VEL_AVANCO      = 0  ; /* ( Numero do Avanço em mm/Rot ) */
+_FERR_VEL_AVANCO_ACAB = 0  ; /* ( Numero do Avanço p/ Acabamento em mm/Rot ) */
+_FERR_PASSO           = 0  ; /* ( Numero da Passo da Ferramenta ) */
+_FERR_PASSO_ACAB      = 0  ; /* ( Numero da Passo p/ Acabamento da Ferramenta ) */
+_FERR_RECUO           = 0  ; /* ( Numero do Recuo da Ferramenta, 0=Sem Recuo  ) */
+_FERR_LARGURA         = 0  ; /* ( Numero da Largura da Ferramenta, para Ferramentas de Canal ) */
+_FERR_DIAMETRO        = 0  ; /* ( Numero do Diametro da Ferramenta, para Ferramentas de Desbaste e Brocas) */
+
+
+
+ferramenta(8);
+draw_tool([0,0]);
+
+draw_tool([30,30]);
+
+draw_tool([30,40]);
+
+draw_tool([10,0]);
+
+/*
+peca=
+{ 
+ [0  , 0],
+ [10 , -],
+ [-  , -30],
+ [20 , -60],
+ [-,-65,5]
+} ;
+
+goto(peca) ;
+
+maquina_vars();
+ferramenta(8);
+maquina_ajusta_desbaste(10);
+maquina_ajusta_acabamento(10);
+
+ferramenta(35);
+maquina_ajusta_desbaste();
+maquina_ajusta_acabamento();
+
+
+maquina_vel_placa(1000);
+
+maquina_placa_fecha();
+maquina_cp_abre();
+maquina_placa_liga(_MAQ_PLACA_SENTIDO_H);
+maquina_placa_abre();
+maquina_placa_liga(_MAQ_PLACA_SENTIDO_AH);
+maquina_cp_fecha();
+maquina_placa_liga(_MAQ_PLACA_SENTIDO_H);
+maquina_cp_abre();
+maquina_placa_liga(_MAQ_PLACA_SENTIDO_AH);
+maquina_placa_para();*/

@@ -1,0 +1,318 @@
+include("config.gcmc");
+
+/*
+Variaveis da Ferramenta para definir as caracteristicas da ferramenta e ajudar a
+calcular as velocidades do processo
+*/
+_FERR_NUMERO      = -1 ; /* ( Numero do Corretor da Ferramenta ) */
+_FERR_DESCRICAO   = "" ; /* ( Texto com a Descrição da Ferramenta ) */
+_FERR_POSICAO     = 0  ; /* ( Numero da Posição no Castelo de Ferramentas ) */
+_FERR_TIPO        = 0  ; /* ( Numero do tipo, 1=Lateral, 2=Topo, 3=Broca ) */
+_FERR_VEL_CORTE   = 0  ; /* ( Numero da Velocidade de Corte Maxima Têorica em Metros/min ) */
+_FERR_VEL_AVANCO  = 0  ; /* ( Numero da Velocidade de Avanço em mm/Rot ) */
+_FERR_PASSO       = 0  ; /* ( Numero da Passo de Desbaste da Ferramenta ) */
+_FERR_RECUO       = 0  ; /* ( Numero do Recuo da Ferramenta, 0=Sem Recuo  ) */
+_FERR_LARGURA     = 0  ; /* ( Numero da Largura da Ferramenta, para Ferramentas de Canal ) */
+_FERR_DIAMETRO    = 0  ; /* ( Numero do Diametro da Ferramenta, para Ferramentas de Desbaste e Brocas) */
+_FERR_PERFIL      = {}  ; /* ( Seguencia de Vetores que Representam o Desenho e Posição da Ferramenta) */
+
+/* Variaveis Calculadas automaticamente, Dividido por 2 */
+_FERR_VEL_AVANCO_ACAB  = 0  ; /* ( Numero da Velocidade de Avanço para acabamento em mm/Rot ) */
+_FERR_PASSO_ACAB       = 0  ; /* ( Numero do Passo para Acabamento da Ferramenta ) */
+
+/*Definição dos Valores dos Tipos de Ferramenta */
+_FERR_TIPO_LATERAL = 1 ;
+_FERR_TIPO_TOPO    = 2 ; 
+_FERR_TIPO_BROCA   = 3 ;
+
+/*
+Fator de Correção das Ferramentras em razão do tipo do material, dureza, ou processo.
+*/
+_FERR_CORRECAO_VEL_CORTE  = 100 ;
+_FERR_CORRECAO_VEL_AVANCO = 100 ;
+_FERR_CORRECAO_PASSO      = 100 ;
+
+function ferramentas_vars()
+{
+  literal("\n",
+          _SEP_COMENTARIOS, _SEP_BLOCOS, "\n",
+          _SEP_COMENTARIOS, "---- ferramentas_vars() ----", "\n",
+          _SEP_COMENTARIOS, "          _FERR_DESCRICAO = ", _FERR_DESCRICAO , "\n",
+          _SEP_COMENTARIOS, "             _FERR_NUMERO = ", _FERR_NUMERO ,  " (Corretor D)\n",
+          _SEP_COMENTARIOS, "            _FERR_POSICAO = ", _FERR_POSICAO , " (Posicao T)\n",
+          _SEP_COMENTARIOS, "               _FERR_TIPO = ", _FERR_TIPO , " (1=Lat, 2=Top, 3=Broca)\n",
+          _SEP_COMENTARIOS, "          _FERR_VEL_CORTE = ", _FERR_VEL_CORTE , " (M/min)\n",
+          _SEP_COMENTARIOS, "         _FERR_VEL_AVANCO = ", _FERR_VEL_AVANCO , " (mm/Rot)\n",
+          _SEP_COMENTARIOS, "    _FERR_VEL_AVANCO_ACAB = ", _FERR_VEL_AVANCO_ACAB , " (mm/Rot)\n",
+          _SEP_COMENTARIOS, "              _FERR_PASSO = ", _FERR_PASSO , " (mm)\n",
+          _SEP_COMENTARIOS, "         _FERR_PASSO_ACAB = ", _FERR_PASSO_ACAB , " (mm)\n",
+          _SEP_COMENTARIOS, "              _FERR_RECUO = ", _FERR_RECUO , " (mm)\n",
+          _SEP_COMENTARIOS, "            _FERR_LARGURA = ", _FERR_LARGURA , " (mm)\n",
+          _SEP_COMENTARIOS, "           _FERR_DIAMETRO = ", _FERR_DIAMETRO , " (mm)\n",
+          _SEP_COMENTARIOS, " _FERR_CORRECAO_VEL_CORTE = ", _FERR_CORRECAO_VEL_CORTE , " (%)\n",
+          _SEP_COMENTARIOS, "_FERR_CORRECAO_VEL_AVANCO = ", _FERR_CORRECAO_VEL_AVANCO , " (%)\n",
+          _SEP_COMENTARIOS, "     _FERR_CORRECAO_PASSO = ", _FERR_CORRECAO_PASSO , " (%)\n",
+          _SEP_COMENTARIOS, "             _FERR_PERFIL = ", _FERR_PERFIL , "\n"
+  ) ;
+}
+
+
+function ferramenta(Num=1)
+{
+  local _old = _FERR_NUMERO ;
+  _FERR_NUMERO = 0 ;
+/* Estrutura de modelo
+  if(Num==0 || Num==0)
+  {
+    _FERR_DESCRICAO   = ( Texto com a Descrição da Ferramenta ) ;
+    _FERR_POSICAO     = ( Numero da Posição no Castelo de Ferramentas ) ;
+    _FERR_TIPO        = ( Numero do tipo, 1=Lateral, 2=Topo, 3=Broca ) ;
+    _FERR_VEL_CORTE   = ( Numero da Velocidade de Corte Maxima Têorica em Metros/min ) ;
+    _FERR_VEL_AVANCO  = ( Numero da Velocidade de Avanço em mm/volta ) ;
+    _FERR_PASSO       = ( Numero da Passo de Desbaste da Ferramenta ) ;
+    _FERR_PASSO_ACAB  = ( Numero da Passo de Acabamento da Ferramenta ) ;
+    _FERR_RECUO       = ( Numero do Recuo da Ferramenta, 0=Sem Recuo, -1=Recuo Total ) ;
+    _FERR_LARGURA     = ( Numero da Largura da Ferramenta, para Ferramentas de Canal ) ;
+    _FERR_DIAMETRO    = ( Numero do Diametro da Ferramenta, para Ferramentas de Desbaste e Brocas) ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ; ( Seguencia de Vetores que Representam o Desenho e Posição da Ferramenta) 
+  }
+*/
+
+/*--------BLOCO DE FERRAMENTAS TIPO LATERAL*/
+
+  if(Num==1 || Num==11)
+  {
+    _FERR_POSICAO     = 1 ;
+    _FERR_TIPO        = _FERR_TIPO_LATERAL ;
+    _FERR_VEL_CORTE   = 200 ;
+    _FERR_VEL_AVANCO  = 0.07 ;
+    _FERR_PASSO       = 5 ;
+    _FERR_RECUO       = 4 ;
+    _FERR_LARGURA     = 2 ;
+    _FERR_DIAMETRO    = 0 ;
+    _FERR_NUMERO      = Num ;
+    if(Num==1)   { _FERR_DESCRICAO   = to_string("Bedame de Corte Reto ", _FERR_LARGURA, "mm, zero a Esquerda") ; }
+    if(Num==11)  { _FERR_DESCRICAO   = to_string("Bedame de Corte Reto ", _FERR_LARGURA, "mm, zero a Direita") ; }
+    _FERR_PERFIL      = {}  ;
+  }
+  
+  if(Num==2)
+  {
+    _FERR_DESCRICAO   = "Rosca Externa Normalizada 60 Graus"; 
+    _FERR_POSICAO     = 2 ;
+    _FERR_TIPO        = _FERR_TIPO_LATERAL ;
+    _FERR_VEL_CORTE   = 40 ;
+    _FERR_VEL_AVANCO  = 0 ;
+    _FERR_PASSO       = 0.12 ;
+    _FERR_RECUO       = 0 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 0 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+  
+  if(Num==8 || Num==18)
+  {
+    if(Num==8)  { _FERR_DESCRICAO   = "Desbaste Triangular Esquerda Raio 0.4 DownHill"; }
+    if(Num==18) { _FERR_DESCRICAO   = "Desbaste Triangular Esquerda Raio 0.4 UpHill"; }
+    _FERR_POSICAO     = 8 ;
+    _FERR_TIPO        = _FERR_TIPO_LATERAL ;
+    _FERR_VEL_CORTE   = 200 ;
+    _FERR_VEL_AVANCO  = 0.17 ;
+    _FERR_PASSO       = 1 ;
+    _FERR_RECUO       = 0 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 0.4 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {[2.1,0],[0.1,0],[0.013,0.15,0.1],[1.013,1.88]} * _FERR_DIAMETRO * 10 ;
+  }
+
+/*--------BLOCO DE FERRAMENTAS TIPO BROCA*/
+  if(Num==4 || Num==6)
+  {
+    _FERR_DESCRICAO   = "Broca de Centro";
+    if(Num==4)  { _FERR_POSICAO     = 4; }
+    if(Num==6)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_BROCA ;
+    _FERR_VEL_CORTE   = 20 ;
+    _FERR_VEL_AVANCO  = 0.14 ;
+    _FERR_PASSO       = 5 ;
+    _FERR_RECUO       = 3 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 8 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {[0,0],[0.5,0.29],[0.5,3],[-0.5,3],[-0.5,0.29],[0,0]} * _FERR_DIAMETRO ;
+  }
+
+  if(Num>=31 && Num<=49)
+  {
+    _FERR_DIAMETRO    = (Num - 30) ;
+    _FERR_DESCRICAO   = "Broca de " + to_string(_FERR_DIAMETRO) + "mm";
+    _FERR_POSICAO     = 4;
+    _FERR_TIPO        = _FERR_TIPO_BROCA ;
+    _FERR_VEL_CORTE   = 20 ;
+    _FERR_VEL_AVANCO  = (0.048 + (0.012 * (_FERR_DIAMETRO))) ;
+    _FERR_PASSO       = 5 ;
+    _FERR_RECUO       = 3 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {[0,0],[0.5,0.29],[0.5,3],[-0.5,3],[-0.5,0.29],[0,0]} * _FERR_DIAMETRO ;
+  }
+
+  if(Num>=51 && Num<=69)
+  {
+    _FERR_DIAMETRO    = (Num - 50) ;
+    _FERR_DESCRICAO   = "Broca de " + to_string(_FERR_DIAMETRO) + "mm";
+    _FERR_POSICAO     = 4;
+    _FERR_TIPO        = _FERR_TIPO_BROCA ;
+    _FERR_VEL_CORTE   = 20 ;
+    _FERR_VEL_AVANCO  = (0.048 + (0.012 * (_FERR_DIAMETRO))) ;
+    _FERR_PASSO       = 5 ;
+    _FERR_RECUO       = 3 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {[0,0],[0.5,0.29],[0.5,3],[-0.5,3],[-0.5,0.29],[0,0]} * _FERR_DIAMETRO ;
+  }
+
+/*--------BLOCO DE FERRAMENTAS TIPO TOPO*/
+  if(Num==19 || Num==20)
+  {
+    _FERR_DESCRICAO   = "Desbaste Triangular Interno Pequena";
+    if(Num==19)  { _FERR_POSICAO     = 4; }
+    if(Num==20)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 100 ;
+    _FERR_VEL_AVANCO  = 0.15 ;
+    _FERR_PASSO       = 0.5 ;
+    _FERR_RECUO       = 0 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 0.2 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {[-2.1,0],[-0.1,0],[-0.013,0.15,-0.1],[-1.013,1.88]} * _FERR_DIAMETRO * 10 ;
+  }
+
+  if(Num==21 || Num==22)
+  {
+    _FERR_DESCRICAO   = "Desbaste Triangular Interno Grande";
+    if(Num==21)  { _FERR_POSICAO     = 4; }
+    if(Num==22)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 100 ;
+    _FERR_VEL_AVANCO  = 0.2 ;
+    _FERR_PASSO       = 0.5 ;
+    _FERR_RECUO       = 0 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 20 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+
+  if(Num==23 || Num==24)
+  {
+    _FERR_DESCRICAO   = "Ferramenta de Rosca Interno Pequena";
+    if(Num==23)  { _FERR_POSICAO     = 4; }
+    if(Num==24)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 20 ;
+    _FERR_VEL_AVANCO  = 0 ;
+    _FERR_PASSO       = 0.1 ;
+    _FERR_RECUO       = 0.3 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 20 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+
+  if(Num==25 || Num==26)
+  {
+    _FERR_DESCRICAO   = "Ferramenta de Rosca Interno Grande";
+    if(Num==25)  { _FERR_POSICAO     = 4; }
+    if(Num==26)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 40 ;
+    _FERR_VEL_AVANCO  = 0 ;
+    _FERR_PASSO       = 0.14 ;
+    _FERR_RECUO       = 0.3 ;
+    _FERR_LARGURA     = 0 ;
+    _FERR_DIAMETRO    = 20 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+
+  if(Num==27 || Num==28)
+  {
+    _FERR_DESCRICAO   = "Ferramenta de Canal Interno Pequena";
+    if(Num==27)  { _FERR_POSICAO     = 4; }
+    if(Num==28)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 40 ;
+    _FERR_VEL_AVANCO  = 0 ;
+    _FERR_PASSO       = 3 ;
+    _FERR_RECUO       = 1 ;
+    _FERR_LARGURA     = 2 ;
+    _FERR_DIAMETRO    = 12 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+
+  if(Num==29 || Num==30)
+  {
+    _FERR_DESCRICAO   = "Ferramenta de Canal Interno Grande";
+    if(Num==29)  { _FERR_POSICAO     = 4; }
+    if(Num==30)  { _FERR_POSICAO     = 6; }
+    _FERR_TIPO        = _FERR_TIPO_TOPO ;
+    _FERR_VEL_CORTE   = 40 ;
+    _FERR_VEL_AVANCO  = 0 ;
+    _FERR_PASSO       = 3 ;
+    _FERR_RECUO       = 1 ;
+    _FERR_LARGURA     = 2 ;
+    _FERR_DIAMETRO    = 20 ;
+    _FERR_NUMERO      = Num ;
+    _FERR_PERFIL      = {}  ;
+  }
+
+
+  /* Aplica as Correções dos Valores de material e processo*/
+  _FERR_VEL_CORTE  = _FERR_VEL_CORTE  * _FERR_CORRECAO_VEL_CORTE / 100 ;
+  _FERR_VEL_AVANCO = _FERR_VEL_AVANCO * _FERR_CORRECAO_VEL_AVANCO / 100 ;
+  _FERR_PASSO      = to_float(_FERR_PASSO) * _FERR_CORRECAO_PASSO / 100 ;
+
+
+  /* Calcula Automaticamente as velocidade para Acabamento */
+  _FERR_VEL_AVANCO_ACAB  = _FERR_VEL_AVANCO / 2 ;
+  _FERR_PASSO_ACAB       = _FERR_PASSO / 2 ;
+  
+  if(_FERR_NUMERO == 0)
+  {
+    _FERR_NUMERO = _old;
+    literal("\n", _SEP_ERROS , "Ferramenta ", Num , " Não definida na lista interna." , "\n" );
+    _();
+  } 
+  elif(_FERR_DEBUG && _old != _FERR_NUMERO )
+  {
+    ferramentas_vars() ;
+  }
+}
+
+
+function detalha_ferramenta_atual()
+{
+  ferramentas_vars();
+}
+
+function exibe_lista_ferramentas()
+{
+  local _old = _FERR_DEBUG;
+  _FERR_DEBUG = 1 ;
+    for(i = 0; i < 100; i++) {
+    	ferramenta(i);
+  _FERR_DEBUG = _old ;
+}
+
+}
+
+if(_DEBUG)
+{
+  exibe_lista_ferramentas();
+}

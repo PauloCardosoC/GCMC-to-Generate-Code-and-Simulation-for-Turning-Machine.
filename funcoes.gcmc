@@ -1,0 +1,269 @@
+include("ferramentas.gcmc");
+
+/* Função para ajustar e mover para um ponto especifico no modo torno
+*/
+function __move(pontos)
+{
+  local v;
+  if(isvector(pontos))
+  {
+    if(plane(undef)==PLANE_XZ)
+    {
+      if(  isundef(pontos[0])==0 && isundef(pontos[1])==0){ v = [ pontos[0], - ,pontos[1] ] ; }
+      elif(isundef(pontos[0])==1 && isundef(pontos[1])==0){ v = [ -        , - ,pontos[1] ] ; }
+      elif(isundef(pontos[0])==0 && isundef(pontos[1])==1){ v = [ pontos[0], - , - ] ; }
+    }
+    if(plane(undef)==PLANE_XY)
+    {
+      if(  isundef(pontos[1])==0 && isundef(pontos[0])==0){ v = [ pontos[1], pontos[0] ] ; }
+      elif(isundef(pontos[1])==1 && isundef(pontos[0])==0){ v = [ -        , pontos[0] ] ; }
+      elif(isundef(pontos[1])==0 && isundef(pontos[0])==1){ v = [ pontos[1], - ] ; }
+    }
+    if(count(pontos)==3 && isundef(pontos[2])==0 )
+    {
+      if(pontos[2]>0)
+      {
+        arc_ccw(v, pontos[2]);
+      }
+      elif(pontos[2]<0)
+      {
+        arc_cw(v, pontos[2]*(-1));
+      }
+    }
+    else
+    {
+      move(v);
+    }
+  }
+}
+
+
+/* Função para ajustar e ir para para um ponto especifico no modo torno
+*/
+function __goto(pontos)
+{
+  local v;
+  if(isvector(pontos))
+  {
+    if(plane(undef)==PLANE_XZ)
+    {
+      if(  isundef(pontos[0])==0 && isundef(pontos[1])==0){ v = [ pontos[0], - ,pontos[1] ] ; }
+      elif(isundef(pontos[0])==1 && isundef(pontos[1])==0){ v = [ -        , - ,pontos[1] ] ; }
+      elif(isundef(pontos[0])==0 && isundef(pontos[1])==1){ v = [ pontos[0], - , - ] ; }
+    }
+    if(plane(undef)==PLANE_XY)
+    {
+      if(  isundef(pontos[1])==0 && isundef(pontos[0])==0){ v = [ pontos[1], pontos[0] ] ; }
+      elif(isundef(pontos[1])==1 && isundef(pontos[0])==0){ v = [ -        , pontos[0] ] ; }
+      elif(isundef(pontos[1])==0 && isundef(pontos[0])==1){ v = [ pontos[1], - ] ; }
+    }
+    goto(v);
+  }
+}
+
+
+
+
+/* Função alternativa do move(), já com os valores das linhas definidos
+   e com movimentos ajustados para o modo Torno */
+function _move(pontos)
+{ 
+  local old_color = linecolor(_CFG_MOVE_LINE_COLOR);
+  local old_width = linewidth(_CFG_MOVE_LINE_WIDTH);
+  local old_opac  = lineopacity(_CFG_MOVE_LINE_OPACITY);
+  if(issvg()){goto(position());}
+  if(isvectorlist(pontos))
+  {
+    foreach(pontos; v) 
+    {
+      __move(v);
+    }
+  }
+  elif(isvector(pontos))
+  {
+    __move(pontos);
+  }
+  linecolor(old_color);
+  linewidth(old_width);
+  lineopacity(old_opac);
+}
+
+/* Função alternativa do goto(), já com os valores das linhas definidos
+   e com movimentos ajustados para o modo Torno */
+function _goto(pontos)
+{ 
+  local old_color = linecolor(_CFG_GOTO_LINE_COLOR);
+  local old_width = linewidth(_CFG_GOTO_LINE_WIDTH);
+  local old_opac  = lineopacity(_CFG_GOTO_LINE_OPACITY);
+  if(issvg()){goto(position());}
+  if(isvectorlist(pontos))
+  {
+    foreach(pontos; v) 
+    {
+      __move(v);
+    }
+  }
+  elif(isvector(pontos))
+  {
+    __move(pontos);
+  }
+  linecolor(old_color);
+  linewidth(old_width);
+  lineopacity(old_opac);
+}
+
+function _drill(safe_z=undef, start_z=undef, end_z=undef, step=0)
+{
+  local msg = "";
+  local i;
+  if(isint(safe_z) == isfloat(safe_z))
+    {msg += "safe_z need to be a number.\n" ; }
+  if(isint(start_z) == isfloat(start_z) || start_z > safe_z)
+    {msg += "start_z need to be a number and <= safe_z.\n" ; }
+  if(isint(end_z) == isfloat(end_z) || end_z > start_z)
+    {msg += "end_z need to be a number and < start_z.\n" ; }
+  if(isint(step) == isfloat(step) || step < 0.0)
+    {msg += "step need to be a number and >= 0.\n" ; }
+  if(msg!="")
+    {
+      literal("\n", _SEP_ERROS, "function _drill(safe_z, start_z, end_z, step)\n",
+              msg
+             );
+      _();
+    }
+    
+  _goto([-,safe_z]); /* Vá para o ponto Z safe_z */
+  _goto([1,-]);      /* Vá para o ponto X 0 */
+  _move([0,-]);      /* Tira a Folga do Fuso em X*/
+  _goto([-,(start_z+1)]) ;  /* Va para o ponto Z start_z + 1 */
+  _move([-,start_z]) ;  /* Aproxima do ponto Z start_z */
+  if(step == 0)
+  {
+    _move([-,end_z]);
+  }
+  else
+  { 
+    i=start_z;
+    while( i > (end_z + step) )
+    {
+     i-=step;
+     if(i<end_z) { i=end_z ; }
+     _move([-,i]) ;
+     _goto([-,start_z]) ;
+     _goto([-,i+1]) ;
+    }
+    _move([-,end_z]) ;
+  }
+  _goto([-,safe_z]);
+}
+
+function draw_tool(point=[0,0])
+{
+  if(issvg())
+  {
+    local old_color = linecolor(_CFG_TOOL_LINE_COLOR);
+    local old_width = linewidth(_CFG_TOOL_LINE_WIDTH);
+    local old_opac  = lineopacity(_CFG_TOOL_LINE_OPACITY);
+    local old_position = position();
+    local tool_profile = _FERR_PERFIL;
+    local v;
+    
+    tool_profile=tool_profile + [point[0],point[1]];
+    __goto(tool_profile[0]);
+    foreach(tool_profile; v) 
+    {
+      __move(v);
+    }
+    linecolor(old_color);
+    linewidth(old_width);
+    lineopacity(old_opac);
+    goto(old_position);
+  }
+}
+
+function draw_fixture(point=[0,-50])
+{
+  if(issvg())
+  {
+    local old_color = linecolor(_CFG_FIX_LINE_COLOR);
+    local old_width = linewidth(_CFG_FIX_LINE_WIDTH);
+    local old_opac  = lineopacity(_CFG_FIX_LINE_OPACITY);
+    local old_position = position();
+    local fixture_profile = {[0,0],[10,-],[-,-10],[20,-],[-,-20],[0,-],[-,0]} + point ;
+    local v;
+    __goto(fixture_profile[0]);
+    foreach(fixture_profile; v) 
+    {
+      __move(v);
+    }
+    linecolor(old_color);
+    linewidth(old_width);
+    lineopacity(old_opac);
+    goto(old_position);
+  }
+}
+
+function draw_stock(diameter=10,start_pos=0, end_pos=-70)
+{
+  if(issvg())
+  {
+    local old_color = linecolor(_CFG_STOCK_LINE_COLOR);
+    local old_width = linewidth(_CFG_STOCK_LINE_WIDTH);
+    local old_opac  = lineopacity(_CFG_STOCK_LINE_OPACITY);
+    local old_position = position();
+    local stock_profile = {[0,start_pos],[diameter/2,-],[-,end_pos],[0,-],[0,start_pos]} ;
+    local v;
+    __goto(stock_profile[0]);
+    foreach(stock_profile; v) 
+    {
+      __move(v);
+    }
+    linecolor(old_color);
+    linewidth(old_width);
+    lineopacity(old_opac);
+    goto(old_position);
+  }
+}
+
+layer("FixuresStock");
+draw_fixture([30/2,-50]);
+draw_stock(30);
+ferramenta(8);
+draw_tool();
+
+
+peca={[0,10]};
+peca+={[10,-]};
+peca+={[-,-30]};
+peca+={[20,-60]};
+peca+={[22,-65,-5]};
+peca+={[0,-]};
+peca=peca+[-,20];
+
+layer("0");
+__goto(peca[0]);
+_goto(peca);
+
+
+layer("1");
+message(peca);
+ferramenta(19);
+peca=peca + [1,0];
+message(peca);
+__goto(peca[0]);
+draw_tool([0,0]);
+_move({[10,10],[0,5],[30,10],[0,0]});
+_move(peca);
+__goto(peca[0]);
+
+
+layer("2");
+message(peca);
+ferramenta(8);
+peca=peca + [1,0];
+message(peca);
+__goto(peca[0]);
+draw_tool([0,0]);
+_move(peca);
+__goto(peca[0]);
+

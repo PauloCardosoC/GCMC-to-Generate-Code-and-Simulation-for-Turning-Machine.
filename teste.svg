@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with gcmc (http://www.vagrearg.org/content/gcmc) -->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  version="1.1"
+  width="101.550000mm"
+  height="39.300000mm"
+  viewBox="0.0 0.0 359.822835 139.251969"
+>
+<sodipodi:namedview
+  inkscape:document-units="mm"
+  units="mm"
+  showgrid="true">
+  <inkscape:grid
+    type="xygrid"
+    units="mm"
+    empspacing="4"
+    visible="true"
+    enabled="true"
+    snapvisiblegridlinesonly="true" />
+</sodipodi:namedview>
+<g inkscape:label="FixuresStock" inkscape:groupmode="layer" id="FixuresStock" transform="scale(3.543307) translate(70.050000 35.050000) scale(1 -1)">
+<path style="stroke:#88005B;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.500000" id="path1" d="M -50.000000,15.000000 L -50.000000,15.000000 L -50.000000,25.000000 L -60.000000,25.000000 L -60.000000,35.000000 L -70.000000,35.000000 L -70.000000,15.000000 L -50.000000,15.000000"/>
+<path style="stroke:#FF00FF;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1.000000" id="path2" d="M 0.000000,0.000000 L 0.000000,0.000000 L 0.000000,15.000000 L -70.000000,15.000000 L -70.000000,0.000000 L 0.000000,0.000000"/>
+<path style="stroke:#FF6600;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.000000" id="path3" d="M 0.000000,8.400000 L 0.000000,8.400000 L 0.000000,0.400000 A 0.400000,0.400000 -0.227990 0,1 0.600000,0.052000 L 7.520000,4.052000"/>
+</g>
+<g inkscape:label="0" inkscape:groupmode="layer" id="0" transform="scale(3.543307) translate(70.050000 35.050000) scale(1 -1)">
+<path style="stroke:#FF0000;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.500000" id="path4" d="M 30.000000,0.000000 L 30.000000,0.000000 L 30.000000,10.000000 L -10.000000,10.000000 L -40.000000,20.000000 A 5.000000,5.000000 100.781297 0,0 -45.000000,22.000000 L -45.000000,0.000000"/>
+</g>
+<g inkscape:label="1" inkscape:groupmode="layer" id="1" transform="scale(3.543307) translate(70.050000 35.050000) scale(1 -1)">
+<path style="stroke:#FF6600;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.000000" id="path5" d="M 0.000000,-4.200000 L 0.000000,-4.200000 L 0.000000,-0.200000 A 0.200000,0.200000 0.227990 0,0 0.300000,-0.026000 L 3.760000,-2.026000"/>
+<path style="stroke:#0000FF;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.500000" id="path6" d="M 30.000000,1.000000 L 10.000000,10.000000 L 5.000000,0.000000 L 10.000000,30.000000 L 0.000000,0.000000"/>
+<path style="stroke:#0000FF;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.500000" id="path7" d="M 0.000000,0.000000 L 30.000000,1.000000 L 30.000000,11.000000 L -10.000000,11.000000 L -40.000000,21.000000 A 5.000000,5.000000 100.781297 0,0 -45.000000,23.000000 L -45.000000,1.000000"/>
+</g>
+<g inkscape:label="2" inkscape:groupmode="layer" id="2" transform="scale(3.543307) translate(70.050000 35.050000) scale(1 -1)">
+<path style="stroke:#FF6600;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.000000" id="path8" d="M 0.000000,8.400000 L 0.000000,8.400000 L 0.000000,0.400000 A 0.400000,0.400000 -0.227990 0,1 0.600000,0.052000 L 7.520000,4.052000"/>
+<path style="stroke:#0000FF;stroke-width:0.100000;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.500000" id="path9" d="M 30.000000,2.000000 L 30.000000,2.000000 L 30.000000,12.000000 L -10.000000,12.000000 L -40.000000,22.000000 A 5.000000,5.000000 100.781297 0,0 -45.000000,24.000000 L -45.000000,2.000000"/>
+</g>
+</svg>

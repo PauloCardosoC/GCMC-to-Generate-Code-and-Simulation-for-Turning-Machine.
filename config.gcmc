@@ -1,0 +1,53 @@
+_DEBUG      = 0; /* Exibe comentarios para auxiliar na depuração do codigo gerado */
+_FERR_DEBUG = 1; /* Exibe informações e comentarios nos comandos referentes as ferramentas */
+_MAQ_DEBUG  = 1; /* Exibe informações e comentarios nos comandos referentes a maquina */
+_ERRO       = 0; /* Variavel que em caso de erro para a execução dos demais codigos */
+
+/*Define o separador de comandos*/
+_SEP_COMANDOS    = ":"     ;  
+
+/*Define o que sera usado para indicar as linhas dos comentarios*/
+_SEP_COMENTARIOS = ":; "   ;  
+
+/*Define o que sera usado para indicar as linhas dos Avisos*/
+_SEP_AVISOS       = to_string(_SEP_COMENTARIOS, "--> WARN: ")  ;  
+
+/*Define o que sera usado para indicar as linhas dos erros*/
+_SEP_ERROS       = "--> ERROR: "  ;  
+
+/*Define o separador de Blocos*/ 
+_SEP_BLOCOS="------------------------------------------------" ; 
+
+/* undef Variable used in some functions in place of undef() */
+undef=undef();
+
+/*  */
+_CFG_MOVE_LINE_WIDTH  = 0.1;
+_CFG_MOVE_LINE_COLOR  = 0x0000FF;
+_CFG_MOVE_LINE_OPACITY= 0.5;
+
+_CFG_GOTO_LINE_WIDTH  = 0.1;
+_CFG_GOTO_LINE_COLOR  = 0xFF0000;
+_CFG_GOTO_LINE_OPACITY= 0.5;
+
+_CFG_TOOL_LINE_WIDTH  = 0.1;
+_CFG_TOOL_LINE_COLOR  = 0xFF6600;
+_CFG_TOOL_LINE_OPACITY= 0;
+
+_CFG_FIX_LINE_WIDTH  = 0.1;
+_CFG_FIX_LINE_COLOR  = 0x88005b;
+_CFG_FIX_LINE_OPACITY= 0.5;
+
+_CFG_STOCK_LINE_WIDTH  = 0.1;
+_CFG_STOCK_LINE_COLOR  = 0xFF00FF;
+_CFG_STOCK_LINE_OPACITY= 1;
+
+if( isgcode() )
+{
+  plane(PLANE_XZ);
+}
+if( issvg() )
+{
+  plane(PLANE_XY);
+}
+

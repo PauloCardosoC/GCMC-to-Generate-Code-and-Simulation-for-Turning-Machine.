@@ -1,4 +1,4 @@
-# GCMC and CNC Lathe Project Viewer / GCMC e Visualizador de Projetos para Torno CNC
+# GCMC and CNC Lathe Project Simulator / GCMC e Simulador de Projetos para Torno CNC
 
 ![Simulation](https://github.com/PauloCardosoC/GCMC-to-Generate-Code-and-Simulation-for-Turning-Machine./blob/main/torno.gif?raw=true)
 
@@ -79,7 +79,7 @@ python3 animate_cnc.py --help
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-## 🧩 1 - Sobre este projeto (Português)
+## 🇧🇷 1 - Sobre este projeto (Português)
 
 Recentemente precisei começar a escrever programas para um torno CNC da marca **Nardini**, cujo comando é fabricado pela **MCS**.
 Ele possui várias funções interessantes e versáteis, mas, para quem não é do ramo ou o utiliza de forma esporádica, torna-se difícil visualizar o processo de usinagem e programar todas as funções passo a passo — além de lembrar as regras de velocidade, ferramentas, profundidade de corte, avanço por volta, tipo de material, entre outros fatores que precisam ser considerados antes de elaborar o programa para o equipamento.

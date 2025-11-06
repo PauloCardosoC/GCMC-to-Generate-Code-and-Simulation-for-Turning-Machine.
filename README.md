@@ -1,2 +1,112 @@
-# GCMC-to-Generate-Code-and-Simulation-for-Turning-Machine.
-Using GCMC to Generate Code and Simulation for Turning Machine
+# GCMC and CNC Lathe Project Viewer / GCMC e Visualizador de Projetos para Torno CNC
+
+## 🇺🇸 1 - About this project (English)
+
+Recently, I had to start writing programs for a **Nardini CNC lathe** equipped with an **MCS** controller.
+It has several interesting and versatile functions, but for someone who isn’t in the field or only uses it occasionally, it can be difficult to visualize the machining process and program all the functions step by step — not to mention remembering all the rules for speed, tooling, depth of cut, feed per revolution, material type, and other factors that must be considered before creating a program for the machine.
+
+When searching for more professional solutions — both within the GNU community and from commercial software — I couldn’t find any that met my requirements for **cost** and **ease of use**.
+
+I’ve been a long-time **AutoCAD 10** user and more recently started working with **FreeCAD**.
+In FreeCAD, I couldn’t find a plugin that met my needs. I did find a project with good potential — the **TurningAddon** ([https://github.com/dubstar-04/TurningAddon](https://github.com/dubstar-04/TurningAddon)) — but it was discontinued.
+Unfortunately, my limited experience with **Python** prevented me from continuing its development and usage.
+
+I tried several alternatives, and the most promising one was **EzCAM**, specifically its turning modules.
+After a few weeks learning how to use the software — which is not very intuitive — I tried to generate a code to start testing and evaluate its economic feasibility, but I couldn’t due to the limitations of the demo version.
+
+Returning to the GNU community, I came across **GCMC**, hosted at [https://www.vagrearg.org/content/gcmc](https://www.vagrearg.org/content/gcmc).
+It’s an extremely versatile, expandable, and practical tool capable of generating both **G-Code** and **SVG** from the same source code — representing the same project — but it lacked a visualization feature.
+
+That’s when the idea came up: using the generated **SVG** to build a **project visualizer**.
+Since I’m not an experienced programmer, I turned to AI tools (**ChatGPT** and **Gemini**) to fill in the gaps and help me create such a simulator.
+
+After a few days, the **simulator** was ready, generating **MP4** and **GIF** animations of the projects.
+I tested it with a few simple commands (not yet representing real machining processes) to check its feasibility — and I was amazed by the results.
+This encouraged me to share it with the community.
+
+---
+
+## 🧠 2 - Explanation
+
+*(in progress)*
+
+---
+
+## ⚙️ 3 - How to Use
+
+*(in progress)*
+
+---
+
+## 📋 4 - Todo
+
+* [ ] Translate all existing code and documentation into English to improve accessibility and support.
+* [ ] Create various machining functions (both longitudinal and transverse), using different approaches to improve performance and optimization.
+* [ ] Develop a **path correction system** that considers the tool’s profile (stored as a vector) during step calculation, adjusting toolpaths to avoid unnecessary tool stress.
+* [ ] Implement other ideas and improvements suggested by the community.
+
+---
+
+### 🧷 Links
+
+* GCMC Project: [https://www.vagrearg.org/content/gcmc](https://www.vagrearg.org/content/gcmc)
+* TurningAddon (discontinued): [https://github.com/dubstar-04/TurningAddon](https://github.com/dubstar-04/TurningAddon)
+
+---
+
+**License:** GNU GPL v3 (suggested)
+**Author:** Sergio Santos
+**Status:** Prototype / In development
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+## 🧩 1 - Sobre este projeto (Português)
+
+Recentemente precisei começar a escrever programas para um torno CNC da marca **Nardini**, cujo comando é fabricado pela **MCS**.
+Ele possui várias funções interessantes e versáteis, mas, para quem não é do ramo ou o utiliza de forma esporádica, torna-se difícil visualizar o processo de usinagem e programar todas as funções passo a passo — além de lembrar as regras de velocidade, ferramentas, profundidade de corte, avanço por volta, tipo de material, entre outros fatores que precisam ser considerados antes de elaborar o programa para o equipamento.
+
+Ao buscar soluções mais profissionais, tanto na comunidade GNU quanto em empresas, não encontrei nenhuma que atendesse aos requisitos de **preço** e **facilidade de uso**.
+
+Sou usuário antigo do **AutoCAD 10** e, mais recentemente, do **FreeCAD**.
+No FreeCAD, não encontrei nenhum plugin que atendesse à minha necessidade — cheguei a achar um projeto com potencial, mas que foi descontinuado (**TurningAddon**, [https://github.com/dubstar-04/TurningAddon](https://github.com/dubstar-04/TurningAddon)).
+No entanto, minha inexperiência com a linguagem **Python** não me permitiu dar continuidade ao desenvolvimento e uso desse plugin.
+
+Tentei algumas outras soluções, sendo a mais promissora o **EzCAM**, em seus módulos voltados ao torneamento.
+Após algumas semanas aprendendo a usar a ferramenta — que não é muito intuitiva —, quando finalmente tentei gerar um código para iniciar os testes e avaliar sua viabilidade econômica, não consegui devido às limitações da versão demo.
+
+Voltando à comunidade GNU, encontrei o **GCMC**, hospedado em [https://www.vagrearg.org/content/gcmc](https://www.vagrearg.org/content/gcmc).
+É uma ferramenta extremamente versátil, expansível e prática, capaz de gerar tanto o **G-Code** quanto o **SVG** a partir do mesmo código que representa o mesmo projeto — mas faltava a ela uma forma de visualização.
+
+Nesse ponto surgiu a ideia de usar o **SVG** gerado para criar um **visualizador de projetos**.
+Como não sou um programador experiente, recorri à IA (**ChatGPT** e **Gemini**) para preencher as lacunas e tentar desenvolver esse simulador.
+
+Após alguns dias, o **simulador** estava pronto e gerando arquivos **MP4** e **GIF** dos projetos.
+Testei com alguns comandos simples (que ainda não representam um processo real de usinagem) apenas para avaliar sua viabilidade — e fiquei surpreso com o resultado, o que me motivou a compartilhá-lo com a comunidade.
+
+---
+
+## 🧠 2 - Explicação
+
+Sobre o Visualizador, basta instalar os modulos necessarios via PIP e rodar o comando a partir de um SVG gerado pelo GCMC.
+Cada Camada pode ser um processo, para que as linhas pertencentes a uma camada sejam executadas, precisa que haja uma Ferramenta desenhada nas coordenadas (0,0) e o traço precisa estar com opacidade 0, para que o visualizador a considere como uma ferramenta e a camada possa ser executada.
+
+*(em desenvolvimento)*
+
+---
+
+## ⚙️ 3 - Forma de Uso
+
+*(em desenvolvimento)*
+
+---
+
+## 📋 4 - Todo
+
+* [ ] Traduzir para o inglês os códigos e comentários já gerados, para ampliar o suporte e facilitar o uso por interessados.
+* [ ] Criar diversas funções de usinagem longitudinal e transversal, com abordagens diferenciadas para melhoria da execução e otimização.
+* [ ] Desenvolver um **corretor de trajetória** que leve em consideração o perfil da ferramenta, armazenado como vetor, no momento de calcular os passos — ajustando os caminhos para evitar esforços desnecessários sobre a ferramenta.
+* [ ] Adicionar novas funções e melhorias sugeridas pela comunidade.
+
+---
